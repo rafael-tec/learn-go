@@ -11,9 +11,28 @@ type Course struct {
 	Workload int
 }
 
+type Courses []Course
+
 func main() {
 	mustRenderTemplate()
 	standardRenderTemplate()
+	renderHtmlTemplate()
+}
+
+func renderHtmlTemplate() {
+	fmt.Println("Executing render html template...")
+
+	template := template.Must(template.New("template.html").ParseFiles("template.html"))
+	courses := Courses{
+		Course{"Golang", 31},
+		Course{"Kotlin", 40},
+		Course{"Kotlin", 30},
+	}
+
+	err := template.Execute(os.Stdout, courses)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func mustRenderTemplate() {

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Document</title>
+    </head>
+    <body>
+        <h1>
+            Courses
+        </h1>
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Workload</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{ range . }}
+                    {{ if gt .Workload 30 }}
+                        <tr>
+                            <td>{{ .Name }}</td>
+                            <td>{{ .Workload }}</td>
+                        </tr>
+                    {{ end }}
+                {{ end }}
+            </tbody>
+        </table>
+    </body>
+</html>
