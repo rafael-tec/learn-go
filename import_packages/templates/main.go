@@ -26,7 +26,7 @@ func renderHtmlTemplate() {
 	courses := Courses{
 		Course{"Golang", 31},
 		Course{"Kotlin", 40},
-		Course{"Kotlin", 30},
+		Course{"Python", 30},
 	}
 
 	err := template.Execute(os.Stdout, courses)
