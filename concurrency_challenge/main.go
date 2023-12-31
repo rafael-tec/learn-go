@@ -17,8 +17,8 @@ func main() {
 	chBrasilApi := make(chan string)
 	chViaCep := make(chan string)
 
-	go fetchAddressInBrasilApi(defaultCep, chBrasilApi)
-	go fetchAddressInViaCep(defaultCep, chViaCep)
+	go fetchAddressBrasilApi(defaultCep, chBrasilApi)
+	go fetchAddressViaCep(defaultCep, chViaCep)
 
 	select {
 	case result := <-chBrasilApi:
@@ -30,7 +30,7 @@ func main() {
 	}
 }
 
-func fetchAddressInBrasilApi(cep string, result chan<- string) {
+func fetchAddressBrasilApi(cep string, result chan<- string) {
 	baseUrl := "https://brasilapi.com.br/api/cep/v1/%s"
 	url := fmt.Sprintf(baseUrl, cep)
 
@@ -52,7 +52,7 @@ func fetchAddressInBrasilApi(cep string, result chan<- string) {
 	result <- string(body)
 }
 
-func fetchAddressInViaCep(cep string, result chan<- string) {
+func fetchAddressViaCep(cep string, result chan<- string) {
 	baseUrl := "http://viacep.com.br/ws/%s/json/"
 	url := fmt.Sprintf(baseUrl, cep)
 
