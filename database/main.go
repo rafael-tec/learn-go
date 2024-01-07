@@ -43,7 +43,7 @@ func main() {
 		panic(err)
 	}
 
-	resultByID, err := fetchProduct(db, product.ID)
+	resultByID, err := fetchProductByID(db, product.ID)
 	if err != nil {
 		panic(err)
 	}
@@ -56,6 +56,11 @@ func main() {
 	}
 
 	fmt.Printf("Select all result: %v\n\n", resultAll)
+
+	err = deleteProductByID(db, product.ID)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func saveProduct(db *sql.DB, product Product) error {
@@ -90,7 +95,7 @@ func updateProduct(db *sql.DB, product Product) error {
 	return nil
 }
 
-func fetchProduct(db *sql.DB, productId string) (*Product, error) {
+func fetchProductByID(db *sql.DB, productID string) (*Product, error) {
 	stmt, err := db.Prepare("SELECT id, name, price FROM products WHERE id=?")
 	if err != nil {
 		return &Product{}, err
@@ -99,7 +104,7 @@ func fetchProduct(db *sql.DB, productId string) (*Product, error) {
 	defer stmt.Close()
 
 	var p Product
-	err = stmt.QueryRow(productId).Scan(&p.ID, &p.Name, &p.Price)
+	err = stmt.QueryRow(productID).Scan(&p.ID, &p.Name, &p.Price)
 	if err != nil {
 		return &Product{}, err
 	}
@@ -127,4 +132,20 @@ func fetchProducts(db *sql.DB) ([]Product, error) {
 	}
 
 	return products, nil
+}
+
+func deleteProductByID(db *sql.DB, productID string) error {
+	stmt, err := db.Prepare("DELETE FROM products WHERE id=?")
+	if err != nil {
+		return err
+	}
+
+	defer stmt.Close()
+
+	_, err = stmt.Exec(productID)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
