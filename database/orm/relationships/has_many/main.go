@@ -19,8 +19,9 @@ type Product struct {
 }
 
 type Category struct {
-	ID   int `gorm:"primaryKey"`
-	Name string
+	ID       int `gorm:"primaryKey"`
+	Name     string
+	Products []Product
 }
 
 type SerialNumber struct {
@@ -43,30 +44,45 @@ func main() {
 	}
 	db.Create(&category)
 
-	product := Product{
+	productFifa := Product{
 		Name:       "Fifa 24",
 		CategoryID: category.ID,
 		Price:      500,
 	}
-	db.Create(&product)
-
-	var saved Product
-	db.Last(&saved)
+	db.Create(&productFifa)
 
 	db.Create(&SerialNumber{
 		Number:    uuid.NewString(),
-		ProductID: saved.ID,
+		ProductID: productFifa.ID,
 	})
 
-	var products []Product
-	db.Preload("Category").Preload("SerialNumber").Find(&products)
-	for _, p := range products {
-		fmt.Printf(
-			"ID: %d - Name: %s - CategoryID: %d - SerialNumber: %s\n",
-			p.ID,
-			p.Name,
-			p.CategoryID,
-			p.SerialNumber.Number,
-		)
+	categoryNew := Category{
+		Name: "Vehicle",
+	}
+	db.Create(&categoryNew)
+
+	productGTA := Product{
+		Name:       "GTA 6",
+		CategoryID: categoryNew.ID,
+		Price:      500,
+	}
+	db.Create(&productGTA)
+
+	db.Create(&SerialNumber{
+		Number:    uuid.NewString(),
+		ProductID: productGTA.ID,
+	})
+
+	var categories []Category
+	err = db.Model(&Category{}).Preload("Products.SerialNumber").Find(&categories).Error
+	if err != nil {
+		panic(err)
+	}
+
+	for _, c := range categories {
+		fmt.Println(c.Name + ":")
+		for _, p := range c.Products {
+			fmt.Printf("   ProductName: %s - SerialNumber: %s\n", p.Name, p.SerialNumber.Number)
+		}
 	}
 }
