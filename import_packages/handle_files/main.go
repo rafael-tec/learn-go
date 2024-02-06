@@ -1,9 +1,9 @@
 package main
 
-impot (
-	"os"
-	"fmt"
+import (
 	"bufio"
+	"fmt"
+	"os"
 )
 
 func main() {
@@ -57,7 +57,7 @@ func bufferedFileRead(fileName string) {
 		if err != nil {
 			break
 		}
-	
+
 		fmt.Println(string(buffer[:n]))
 	}
 }
