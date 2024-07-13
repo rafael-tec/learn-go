@@ -1,0 +1,8 @@
+mutation createOrder {
+    createOrder(input: {id "lkd", Price: 777, Tax: 3}) {
+		id
+		Price
+		Tax
+		FinalPrice
+	}
+}

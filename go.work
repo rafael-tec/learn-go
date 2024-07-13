@@ -1,9 +1,10 @@
 go 1.21.5
 
 use (
-	./database/standard
+	./clean_architecture
 	./database/orm/basic_crud
 	./database/orm/relationships/belongs_to
+	./database/standard
 	./foundation/packages
 	./testing/mock
 	./testing/standard
