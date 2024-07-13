@@ -6,3 +6,7 @@ mutation createOrder {
 		FinalPrice
 	}
 }
+
+query {
+  orders{id, Tax, Price, FinalPrice}
+}
