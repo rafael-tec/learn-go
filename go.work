@@ -9,4 +9,5 @@ use (
 	./testing/mock
 	./testing/standard
 	./testing/testify
+	./sqlc
 )

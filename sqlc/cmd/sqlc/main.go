@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	"github.com/google/uuid"
-	"github.com/rafael-tec/learn-go/sqlc/internal/db"
+	"github.com/rafael-tec/sqlc/internal/db"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -21,16 +21,48 @@ func main() {
 	queries := db.New(dbConn)
 
 	ctx := context.Background()
-	_, err = queries.CreateCategory(
+	id := uuid.New().String()
+	_, _ = queries.CreateCategory(
 		ctx,
 		db.CreateCategoryParams{
-			ID:          uuid.New().String(),
+			ID:          id,
 			Name:        "Backend",
 			Description: sql.NullString{String: "Backend", Valid: true},
 		},
 	)
 
 	categories, err := queries.ListCategories(ctx)
+	if err != nil {
+		panic(err)
+	}
+
+	for _, category := range categories {
+		fmt.Println(category)
+	}
+
+	queries.UpdateCategory(
+		ctx,
+		db.UpdateCategoryParams{
+			ID:   id,
+			Name: "Backend Updated",
+		},
+	)
+
+	categories, err = queries.ListCategories(ctx)
+	if err != nil {
+		panic(err)
+	}
+
+	for _, category := range categories {
+		fmt.Println(category)
+	}
+
+	err = queries.DeleteCategoryByID(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+
+	categories, err = queries.ListCategories(ctx)
 	if err != nil {
 		panic(err)
 	}

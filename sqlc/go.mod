@@ -1,4 +1,4 @@
-module github.com/rafael-tec/learn-go/sqlc
+module github.com/rafael-tec/sqlc
 
 go 1.21.5
 

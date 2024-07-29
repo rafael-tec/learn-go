@@ -25,6 +25,39 @@ func (q *Queries) CreateCategory(ctx context.Context, arg CreateCategoryParams) 
 	return q.db.ExecContext(ctx, createCategory, arg.ID, arg.Name, arg.Description)
 }
 
+const createCourse = `-- name: CreateCourse :exec
+INSERT INTO courses (id, name, description, price, category_id)
+VALUES (?, ?, ?, ?, ?)
+`
+
+type CreateCourseParams struct {
+	ID          string
+	Name        string
+	Description sql.NullString
+	Price       float64
+	CategoryID  string
+}
+
+func (q *Queries) CreateCourse(ctx context.Context, arg CreateCourseParams) error {
+	_, err := q.db.ExecContext(ctx, createCourse,
+		arg.ID,
+		arg.Name,
+		arg.Description,
+		arg.Price,
+		arg.CategoryID,
+	)
+	return err
+}
+
+const deleteCategoryByID = `-- name: DeleteCategoryByID :exec
+DELETE FROM categories WHERE id = ?
+`
+
+func (q *Queries) DeleteCategoryByID(ctx context.Context, id string) error {
+	_, err := q.db.ExecContext(ctx, deleteCategoryByID, id)
+	return err
+}
+
 const getCategoryByID = `-- name: GetCategoryByID :one
 SELECT id, name, description FROM categories
 WHERE id = ?
@@ -83,6 +116,50 @@ func (q *Queries) ListCourses(ctx context.Context) ([]Course, error) {
 			&i.Name,
 			&i.Description,
 			&i.Price,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const listCoursesJoinCategory = `-- name: ListCoursesJoinCategory :many
+SELECT co.id, co.category_id, co.name, co.description, co.price, co.name as category_name FROM courses co
+JOIN categories ca ON co.category_id = ca.id
+`
+
+type ListCoursesJoinCategoryRow struct {
+	ID           string
+	CategoryID   string
+	Name         string
+	Description  sql.NullString
+	Price        float64
+	CategoryName string
+}
+
+func (q *Queries) ListCoursesJoinCategory(ctx context.Context) ([]ListCoursesJoinCategoryRow, error) {
+	rows, err := q.db.QueryContext(ctx, listCoursesJoinCategory)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListCoursesJoinCategoryRow
+	for rows.Next() {
+		var i ListCoursesJoinCategoryRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.CategoryID,
+			&i.Name,
+			&i.Description,
+			&i.Price,
+			&i.CategoryName,
 		); err != nil {
 			return nil, err
 		}
